@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeLife 360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="shield">◆</span><div><b>SafeLife <em>360</em></b><small>Personal safety intelligence</small></div></div>
+    <nav>
+      <button class="nav active" data-tab="overview">⌂ <span>Overview</span></button>
+      <button class="nav" data-tab="route">◈ <span>Safe Route</span></button>
+      <button class="nav" data-tab="sos">⚠ <span>SOS Center</span></button>
+      <button class="nav" data-tab="report">● <span>Report Incident</span></button>
+      <button class="nav" data-tab="commute">▣ <span>Safe Commute</span></button>
+      <button class="nav" data-tab="health">♥ <span>Health Profile</span></button>
+    </nav>
+    <div class="side-note"><b>Privacy first</b><br><span>Your reports are stored by this deployment. Location is requested only when a feature needs it.</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">SAFETY COMMAND CENTER</div><h1 id="pageTitle">Good to have you here.</h1></div>
+      <button class="location" onclick="useLocation()">⌖ Use my location</button>
+    </header>
+
+    <section id="overview" class="tab active">
+      <div class="hero">
+        <div><span class="pill">LIVE PLATFORM</span><h2>Your safety, connected.</h2><p>One place for route intelligence, emergency actions, community reports, commute monitoring and medical information.</p>
+        <div class="hero-actions"><button class="primary" onclick="showTab('route')">Plan a safer route →</button><button class="ghost" onclick="showTab('sos')">Open SOS center</button></div></div>
+        <div class="score"><span>Safety readiness</span><strong>—</strong><small>Calculated from your configured features</small></div>
+      </div>
+      <div class="grid4">
+        <div class="stat"><span>Incident reports</span><b id="incidentCount">0</b><small>submitted in this deployment</small></div>
+        <div class="stat"><span>Commute sessions</span><b id="commuteCount">0</b><small>saved locally</small></div>
+        <div class="stat"><span>Route engine</span><b>OSRM</b><small>OpenStreetMap data</small></div>
+        <div class="stat"><span>Emergency profile</span><b id="healthState">Not set</b><small>stored privately in this app</small></div>
+      </div>
+      <div class="grid2">
+        <div class="card map-card"><div class="card-head"><div><h3>Safety map</h3><p>Submitted incidents appear after users report them.</p></div><button class="small" onclick="showTab('report')">Add report</button></div><div id="map"><div class="map-empty">No incident coordinates yet.<br><span>Submit a location-based report to populate this view.</span></div></div></div>
+        <div class="card"><div class="card-head"><div><h3>Quick actions</h3><p>Start a real workflow.</p></div></div><div class="actions">
+          <button onclick="showTab('route')">🗺️ Find a route <span>→</span></button>
+          <button onclick="showTab('report')">📍 Report an incident <span>→</span></button>
+          <button onclick="showTab('commute')">🚕 Start commute monitoring <span>→</span></button>
+          <button onclick="showTab('health')">🏥 Update health profile <span>→</span></button>
+        </div></div>
+      </div>
+    </section>
+
+    <section id="route" class="tab">
+      <div class="section-title"><div><span class="pill">ROUTE INTELLIGENCE</span><h2>Safe Route</h2><p>Get a real road route using OpenStreetMap data. Safety context is based on reports submitted to this deployment.</p></div></div>
+      <div class="grid2">
+        <div class="card form-card"><label>Start<input id="start" placeholder="e.g. Hanumantal, Jabalpur"></label><label>Destination<input id="destination" placeholder="e.g. Jabalpur Railway Station"></label><button class="primary wide" onclick="findRoute()">Find real route</button><div id="routeMsg" class="message"></div></div>
+        <div class="card result"><span class="label">ROUTE RESULT</span><div class="route-big" id="routeDistance">—</div><p id="routeTime">Enter locations to calculate distance and travel time.</p><div class="route-source">Source: OpenStreetMap Nominatim + OSRM</div></div>
+      </div>
+    </section>
+
+    <section id="sos" class="tab">
+      <div class="emergency">
+        <div><span class="pill danger">EMERGENCY CENTER</span><h2>Need immediate help?</h2><p>This browser interface can prepare an SOS workflow, but it cannot truthfully claim that police/SMS were contacted without a configured emergency service.</p></div>
+        <button class="sos" onclick="prepareSOS()">ACTIVATE SOS</button>
+      </div>
+      <div id="sosMsg" class="message"></div>
+      <div class="grid3">
+        <div class="card"><h3>📍 Location</h3><p>Capture your current coordinates and include them in an emergency message.</p><button class="small" onclick="useLocation()">Get location</button><div id="sosLocation" class="message"></div></div>
+        <div class="card"><h3>📞 Emergency calls</h3><p>Use your phone dialer for emergency services or your saved emergency contact.</p><div class="actions"><a class="small" href="tel:112">Call 112</a><button class="small" onclick="callEmergencyContact()">Call contact</button></div></div>
+        <div class="card"><h3>💬 Emergency message</h3><p>Send your location and SOS text through the phone's SMS/WhatsApp app.</p><div class="actions"><button class="small" onclick="sendSOSSMS()">SMS contact</button><button class="small" onclick="shareSOSWhatsApp()">WhatsApp</button></div></div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="card"><h3>🎙️ Voice trigger</h3><p>Foreground voice recognition can listen for the phrase <b>“SafeLife SOS”</b> while this page is open. Browser support varies.</p><button class="small" onclick="toggleVoiceSOS()" id="voiceBtn">Start voice trigger</button><div id="voiceState" class="message"></div></div>
+        <div class="card"><h3>📳 Shake trigger</h3><p>On supported mobile browsers, enable motion detection while the page is open. A strong shake prepares the SOS workflow.</p><button class="small" onclick="enableShakeSOS()" id="shakeBtn">Enable shake trigger</button><div id="shakeState" class="message"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3>Emergency profile</h3><p id="sosProfile">Configure an emergency contact in Health Profile to enable contact call/SMS actions.</p><button class="ghost" onclick="showTab('health')">Open Health Profile</button></div>
+    </section>
+
+    <section id="report" class="tab">
+      <div class="section-title"><div><span class="pill">COMMUNITY SAFETY</span><h2>Anonymous Incident Reporting</h2><p>Submit a factual incident report. Your coordinates are optional.</p></div></div>
+      <div class="grid2"><div class="card form-card"><label>Category<select id="category"><option>Harassment</option><option>Theft</option><option>Unsafe area</option><option>Traffic danger</option><option>Other</option></select></label><label>Description<textarea id="description" placeholder="What happened? Avoid personal identifiers."></textarea></label><div class="inline"><button class="ghost" onclick="useLocation()">Attach my location</button><span id="locState">No location attached</span></div><button class="primary wide" onclick="submitReport()">Submit report</button><div id="reportMsg" class="message"></div></div><div class="card"><div class="card-head"><div><h3>Recent reports</h3><p>Only reports actually submitted here.</p></div></div><div id="reports"></div></div></div>
+    </section>
+
+    <section id="commute" class="tab">
+      <div class="section-title"><div><span class="pill">JOURNEY MONITORING</span><h2>Safe Commute</h2><p>Create a commute record for a trusted-contact workflow.</p></div></div>
+      <div class="grid2"><div class="card form-card"><label>Start<input id="cstart" placeholder="Pickup point"></label><label>Destination<input id="cdest" placeholder="Destination"></label><label>Vehicle / cab number<input id="vehicle" placeholder="Optional"></label><label>Trusted contact<input id="contact" placeholder="Name or contact reference"></label><button class="primary wide" onclick="startCommute()">Start monitoring</button><div id="commuteMsg" class="message"></div></div><div class="card"><h3>Monitoring sessions</h3><div id="commutes"></div></div></div>
+    </section>
+
+    <section id="health" class="tab">
+      <div class="section-title"><div><span class="pill">EMERGENCY HEALTH</span><h2>Health Profile</h2><p>Store only the emergency information you choose to keep in this deployment.</p></div></div>
+      <div class="card form-card health"><div class="grid2"><label>Name<input id="hname"></label><label>Blood group<input id="blood"></label><label>Allergies<input id="allergies"></label><label>Conditions / medicines<input id="conditions"></label><label>Emergency contact<input id="emergency"></label></div><button class="primary" onclick="saveHealth()">Save emergency profile</button><div id="healthMsg" class="message"></div></div>
+    </section>
+  </main>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
